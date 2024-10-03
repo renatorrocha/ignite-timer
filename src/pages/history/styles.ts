@@ -1,5 +1,15 @@
 import styled from "styled-components";
 
+interface StatusProps {
+    statusColor: keyof typeof STATUS_COLORS;
+}
+
+const STATUS_COLORS = {
+    yellow: "yellow-500",
+    green: "green-500",
+    red: "red-500",
+} as const;
+
 export const HistoryContainer = styled.main`
     flex: 1;
     padding: 3.5rem;
@@ -55,5 +65,19 @@ export const HistoryList = styled.div`
                 padding-right: 1.5rem;
             }
         }
+    }
+`;
+
+export const Status = styled.span<StatusProps>`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &::before {
+        content: "";
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 9999px;
+        background: ${(props) => props.theme[STATUS_COLORS[props.statusColor]]};
     }
 `;
