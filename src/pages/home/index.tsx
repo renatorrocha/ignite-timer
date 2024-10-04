@@ -1,12 +1,9 @@
 import { HandPalm, Play } from "phosphor-react";
 import {
     HomeContainer,
-    FormContainer,
     CountdownContainer,
     Separator,
     StartCountdownButton,
-    TaskInput,
-    MinutesAmountInput,
     StopCountdownButton,
 } from "./styles";
 import { useForm } from "react-hook-form";
@@ -139,45 +136,9 @@ export default function Home() {
     return (
         <HomeContainer>
             <form onSubmit={handleSubmit(handleCreateNewSCycle)}>
-                <FormContainer>
-                    <label htmlFor="task">Vou trabalhar em</label>
-                    <TaskInput
-                        id="task"
-                        placeholder="De um nome para o seu projeto"
-                        list="task-suggestions"
-                        disabled={!!activeCycle}
-                        {...register("task")}
-                    />
+               
 
-                    <datalist id="task-suggestions">
-                        <option value="Projeto 1"></option>
-                        <option value="Projeto 2"></option>
-                        <option value="Projeto 3"></option>
-                        <option value="Projeto 4"></option>
-                    </datalist>
-
-                    <label htmlFor="minutesAmount">durante</label>
-                    <MinutesAmountInput
-                        type="number"
-                        id="minutesAmount"
-                        step={5}
-                        min={5}
-                        max={60}
-                        placeholder="00"
-                        disabled={!!activeCycle}
-                        {...register("minutesAmount", { valueAsNumber: true })}
-                    />
-
-                    <span>minutos.</span>
-                </FormContainer>
-
-                <CountdownContainer>
-                    <span>{minutes[0]}</span>
-                    <span>{minutes[1]}</span>
-                    <Separator>:</Separator>
-                    <span>{seconds[0]}</span>
-                    <span>{seconds[1]}</span>
-                </CountdownContainer>
+                
 
                 {activeCycle ? (
                     <StopCountdownButton
