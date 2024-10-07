@@ -4,9 +4,9 @@ import {
     StartCountdownButton,
     StopCountdownButton,
 } from "./styles";
-import { useEffect, useState } from "react";
-import NewCycleForm from "./new-cycle-form";
-import Countdown from "./countdown";
+import { createContext, useEffect, useState } from "react";
+import Countdown from "./_components/countdown";
+import NewCycleForm from "./_components/new-cycle-form";
 
 interface Cycle {
     id: string;
@@ -17,28 +17,51 @@ interface Cycle {
     finishedDate?: Date;
 }
 
+interface CyclesContextType {
+    activeCycle: Cycle | undefined;
+    activeCycleId: string | null;
+    markCurrentCycleAsFinished: () => void;
+}
+
+export const CyclesContext = createContext({} as CyclesContextType);
+
 export default function Home() {
     const [cycles, setCycles] = useState<Cycle[]>([]);
     const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
 
     const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId);
 
-    function handleCreateNewSCycle(data: NewCycleFormData) {
-        const id = String(new Date().getTime());
-
-        const newCycle: Cycle = {
-            id,
-            task: data.task,
-            minutesAmount: data.minutesAmount,
-            startDate: new Date(),
-        };
-
-        setCycles((prev) => [...prev, newCycle]);
-        setActiveCycleId(id);
-        setAmountSecondsPassed(0);
-
-        reset();
+    function markCurrentCycleAsFinished() {
+        setCycles((prev) =>
+            prev.map((cycle) => {
+                if (cycle.id === activeCycleId) {
+                    return {
+                        ...cycle,
+                        finishedDate: new Date(),
+                    };
+                } else {
+                    return cycle;
+                }
+            })
+        );
     }
+
+    // function handleCreateNewSCycle(data: NewCycleFormData) {
+    //     const id = String(new Date().getTime());
+
+    //     const newCycle: Cycle = {
+    //         id,
+    //         task: data.task,
+    //         minutesAmount: data.minutesAmount,
+    //         startDate: new Date(),
+    //     };
+
+    //     setCycles((prev) => [...prev, newCycle]);
+    //     setActiveCycleId(id);
+    //     setAmountSecondsPassed(0);
+
+    //     reset();
+    // }
 
     function handleInterruptCycle() {
         setCycles((prev) =>
@@ -54,50 +77,39 @@ export default function Home() {
         setActiveCycleId(null);
     }
 
-    const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0;
-
-    const minutesAmount = Math.floor(currentSeconds / 60);
-    const secondsAmount = currentSeconds % 60;
-
-    const minutes = String(minutesAmount).padStart(2, "0");
-    const seconds = String(secondsAmount).padStart(2, "0");
-
-    useEffect(() => {
-        if (activeCycle) {
-            document.title = `${minutes}:${seconds}`;
-        }
-    }, [minutes, seconds, activeCycle]);
-
-    const task = watch("task");
-    const isSubmitDisabled = !task;
+    // const task = watch("task");
+    // const isSubmitDisabled = !task;
 
     return (
         <HomeContainer>
-            <form onSubmit={handleSubmit(handleCreateNewSCycle)}>
-                <NewCycleForm />
+            {/* <form onSubmit={handleSubmit(handleCreateNewSCycle)}> */}
+            <CyclesContext.Provider
+                value={{
+                    activeCycle,
+                    activeCycleId,
+                    markCurrentCycleAsFinished,
+                }}
+            >
+                {/* <NewCycleForm /> */}
 
-                <Countdown
-                    activeCycle={activeCycle}
-                    setCycles={setCycles}
-                    activeCycleId={activeCycleId}
-                />
+                <Countdown />
+            </CyclesContext.Provider>
 
-                {activeCycle ? (
-                    <StopCountdownButton
-                        type="button"
-                        onClick={handleInterruptCycle}
-                    >
-                        <HandPalm size={24} /> Interromper
-                    </StopCountdownButton>
-                ) : (
-                    <StartCountdownButton
-                        disabled={isSubmitDisabled}
-                        type="submit"
-                    >
-                        <Play size={24} /> Começar
-                    </StartCountdownButton>
-                )}
-            </form>
+            {activeCycle ? (
+                <StopCountdownButton
+                    type="button"
+                    onClick={handleInterruptCycle}
+                >
+                    <HandPalm size={24} /> Interromper
+                </StopCountdownButton>
+            ) : (
+                <StartCountdownButton
+                    /* disabled={isSubmitDisabled} */ type="submit"
+                >
+                    <Play size={24} /> Começar
+                </StartCountdownButton>
+            )}
+            {/* </form> */}
         </HomeContainer>
     );
 }
