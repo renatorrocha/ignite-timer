@@ -4,12 +4,13 @@ import {
     StartCountdownButton,
     StopCountdownButton,
 } from "./styles";
-import { createContext, useState } from "react";
 import Countdown from "./_components/countdown";
 import NewCycleForm from "./_components/new-cycle-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useContext } from "react";
+import { CyclesContext } from "../../contexts/cycles-context";
 
 export interface Cycle {
     id: string;
@@ -31,6 +32,9 @@ const newCycleFormValidationSchema = z.object({
 export type NewCycleFormData = z.infer<typeof newCycleFormValidationSchema>;
 
 export default function Home() {
+    const { createNewCycle, interruptCurrentCycle, activeCycle } =
+        useContext(CyclesContext);
+
     const newCycleForm = useForm<NewCycleFormData>({
         resolver: zodResolver(newCycleFormValidationSchema),
         defaultValues: {
@@ -46,7 +50,7 @@ export default function Home() {
 
     return (
         <HomeContainer>
-            <form onSubmit={handleSubmit(handleCreateNewSCycle)}>
+            <form onSubmit={handleSubmit(createNewCycle)}>
                 <FormProvider {...newCycleForm}>
                     <NewCycleForm />
                 </FormProvider>
@@ -56,7 +60,7 @@ export default function Home() {
                 {activeCycle ? (
                     <StopCountdownButton
                         type="button"
-                        onClick={handleInterruptCycle}
+                        onClick={interruptCurrentCycle}
                     >
                         <HandPalm size={24} /> Interromper
                     </StopCountdownButton>
