@@ -12,15 +12,6 @@ import { z } from "zod";
 import { useContext } from "react";
 import { CyclesContext } from "../../contexts/cycles-context";
 
-export interface Cycle {
-    id: string;
-    task: string;
-    minutesAmount: number;
-    startDate: Date;
-    interruptedDate?: Date;
-    finishedDate?: Date;
-}
-
 const newCycleFormValidationSchema = z.object({
     task: z.string().min(1, "Informe a tarefa"),
     minutesAmount: z.coerce
